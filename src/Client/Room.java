@@ -14,9 +14,14 @@ import java.net.Socket;
 import java.net.URL;
 import java.sql.ResultSet;
 import java.util.ResourceBundle;
+import javafx.event.ActionEvent;
+import javafx.scene.control.Button;
+import javafx.scene.image.ImageView;
 
 
 public class Room extends Thread implements Initializable {
+    
+    //chat room
     @FXML
     public Label clientName;
     @FXML
@@ -25,23 +30,35 @@ public class Room extends Thread implements Initializable {
     public TextField msgField;
     @FXML
     public TextArea msgRoom;
+
     @FXML
-    public Label fullName;
+    private ImageView online_users;
+    
+    //profile pane
     @FXML
-    public Label email;
+    private Pane profile;
     @FXML
-    public Label phoneNo;
+    private ImageView edit_icon;
     @FXML
-    public Label gender;
+    private ImageView proImage;
     @FXML
-    public Pane profile;
+    private TextField eidt_fname;
     @FXML
-    public TextField fileChoosePath;
+    private TextField edit_phone;
+    @FXML
+    private TextField edit_email;
+    @FXML
+    private Button saveBtn;
+
+
     public boolean toggleChat = false, toggleProfile = false;
 
     BufferedReader reader;
     PrintWriter writer;
     Socket socket;
+
+    
+    
 
     
 
@@ -57,10 +74,6 @@ public class Room extends Thread implements Initializable {
         }
     }
 
-    
-    
-    
-  
     @Override
     public void run() {
         try {
@@ -88,8 +101,7 @@ public class Room extends Thread implements Initializable {
             System.out.println("Exception in Room's run method");
         }
     }
-
-
+    
     @FXML
     public void handleSendEvent(MouseEvent event) throws Exception {
         send();
@@ -126,5 +138,28 @@ public class Room extends Thread implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         clientName.setText(Controller.username);
         connectSocket();
+    }
+
+    @FXML
+    private void SaveHandler(ActionEvent event) throws Exception {
+        String sql = "UPDATE users SET userName = '"+eidt_fname.getText()+"' "
+                    + "AND email = '"+edit_email.getText()+"' "
+                    + "AND phoneNum = '"+edit_phone.getText()+"' "
+                    + "WHERE userName = '"+Controller.username+"'";
+        int rowAffected = DataBase.update_db(sql);
+        System.out.println(rowAffected);
+        msgRoom.toFront();
+        profile.toBack();
+    }
+
+    @FXML
+    private void editHandler(MouseEvent event) throws Exception {
+        profile.toFront();
+        msgRoom.toBack();
+        String sql = "SELECT userName, email,  phoneNum FROM users WHERE userName= '"+Controller.username+"'";
+        ResultSet rs = DataBase.read_from_db(sql);
+        eidt_fname.setText(rs.getString("userName"));
+        edit_email.setText(rs.getString("email"));
+        edit_phone.setText(rs.getString("phoneNum"));
     }
 }

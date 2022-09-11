@@ -30,10 +30,10 @@ static Connection con;
         ResultSet rs = stmt.executeQuery(sql);
         return rs;
     }
-    public static void update_db(String sql) throws Exception
+    public static int update_db(String sql) throws Exception
     {
         Connection con = DataBase.getConnection();
         Statement stmt = con.createStatement();
-        stmt.executeUpdate(sql);
+        return stmt.executeUpdate(sql);
     }
 }
