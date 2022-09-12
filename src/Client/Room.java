@@ -6,7 +6,6 @@ import javafx.geometry.NodeOrientation;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 import java.io.*;
@@ -56,12 +55,6 @@ public class Room extends Thread implements Initializable {
     BufferedReader reader;
     PrintWriter writer;
     Socket socket;
-
-    
-    
-
-    
-
     public void connectSocket() {
         try {
             socket = new Socket("localhost", 8889);
@@ -79,17 +72,7 @@ public class Room extends Thread implements Initializable {
         try {
             while (true) {
                 String msg = reader.readLine();
-                String[] tokens = msg.split(" ");
-                String cmd = tokens[0];
-                System.out.println(cmd);
-                StringBuilder fulmsg = new StringBuilder();
-                for(int i = 1; i < tokens.length; i++) {
-                    fulmsg.append(tokens[i]);
-                }
-                System.out.println(fulmsg);
-                if (cmd.equalsIgnoreCase(Controller.username + ":")) {
-                    continue;
-                } else if(fulmsg.toString().equalsIgnoreCase("bye")) {
+                if(msg.equalsIgnoreCase("bye")) {
                     break;
                 }
                 msgRoom.appendText(msg + "\n");
@@ -98,7 +81,6 @@ public class Room extends Thread implements Initializable {
             writer.close();
             socket.close();
         } catch (Exception e) {
-            System.out.println("Exception in Room's run method");
         }
     }
     
@@ -121,15 +103,6 @@ public class Room extends Thread implements Initializable {
         msgField.setText("");
         if(msg.equalsIgnoreCase("BYE") || (msg.equalsIgnoreCase("logout"))) {
             System.exit(0);
-        }
-    }
-
-
-    public boolean saveControl = false;
-    @FXML
-    public void sendMessageByKey(KeyEvent event) {
-        if (event.getCode().toString().equals("ENTER")) {
-            send();
         }
     }
 
